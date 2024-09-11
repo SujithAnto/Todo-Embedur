@@ -1,0 +1,49 @@
+@startuml TaskTableDisplay
+
+participant Controller as cc
+participant Service as ss
+participant Repository as jpa
+database mysql as db
+
+activate cc
+
+' cc -> cc : Use @RestController annotation to return response without annotate of responsebody
+' cc -> cc : Use @Autowired annotation to create the object ToDoService class
+' cc -> cc : Initialize ToDoService service
+' get api call to display the tasks '
+
+cc -> cc : Use @GetMapping annotation and pass the urlPath ('/DisplayTasktable')
+cc -> cc : Create a public function TodoTable() with return type List<ToDoEntity> 
+cc -> cc : Use @RequestBody annotation with datatype ToDoFetchDataFormat Request
+cc -> cc : Inside the function return the service function FetchToDoTableData by passing the Request as argument
+
+activate ss
+
+ss -> ss : Use @Service Annotation
+ss -> ss : Use @Autowired annotation to create the object Repository class
+ss -> ss : Initialize Repository repo
+ss -> ss : Create a public function FetchToDoTableData() with return type List<ToDoEntity> and set the paramter ToDoFetchDataFormat request
+ss -> ss : Inside the function return the repo class function QueryForToDoTableDisplay by passing the arguments(request.getDate(), request.getStatus(), request.getTask(), request.getSortColumn())
+
+cc -> ss : The FetchToDoTableData() function will be called from Controller layer
+activate jpa
+
+jpa -> jpa : Create a Repository Interface and inherit the properties of JpaRepository using extends and pass TableName and primary key datatype<ToDoEntity,Integer>
+jpa -> jpa : Use @Query Annotation and pass the query in value argument 
+jpa -> jpa : Create a function QueryForToDoTableDisplay() with List<ToDoEntity> return type and pass the parameters LocalDateTime createdDate, String Status , String Task , String SortColumn using  @Param Annotation 
+
+ss -> ss : FetchToDoTableData() will be executed
+ss -> jpa : QueryForToDoTableDisplay() will be called from Service Layer
+
+activate db
+jpa -> db : The query will executed and datas will be fetched from the db
+db -> jpa : The query output will be returned to Repository Layer
+deactivate db
+
+jpa -> ss : The QueryForToDoTableDisplay() output will be returned to the Service Layer
+deactivate jpa
+
+ss -> cc : The FetchToDoTableData() output will be returned to the Controller Layer
+deactivate ss
+
+cc -> cc : The TodoTable() functions output will be returned to the frontend

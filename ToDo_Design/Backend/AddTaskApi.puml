@@ -1,0 +1,39 @@
+@startuml InsertAPI
+
+participant Controller as cc
+participant Service as ss
+participant Repository as jpa
+database mysql as db
+
+activate cc
+
+cc -> cc : Use @PostMapping annotation and pass the urlPath ('/AddTaskToTasktable')
+cc -> cc : Create a public function addTaskToTodoTable() with return type ResponseEntity<ToDoEntity>
+cc -> cc : Use @RequestBody annotation with datatype ToDoEntity insertData
+cc -> cc : Inside the function return the service function addTaskInTable() by passing insertData as argument
+
+activate ss
+
+ss -> ss : Create a public function addTaskInTable() with return type ToDoEntity and set the parameter ToDoEntity insertData
+ss -> ss : Inside the function return the repo method save() by passing insertData as an argument
+ss -> cc : The addTaskInTable() function will be called from the Controller layer
+
+activate jpa
+
+ss -> jpa : save() will be called from Service Layer
+
+activate db
+
+jpa -> db : The query will be executed, and data will be saved to the db
+db -> jpa : The saved entity will be returned to the Repository Layer
+deactivate db
+
+jpa -> ss : The save() output (saved entity) will be returned to the Service Layer
+deactivate jpa
+
+ss -> cc : The addTaskInTable() output (saved entity) will be returned to the Controller Layer
+deactivate ss
+
+cc -> cc : The addTaskToTodoTable() function output (saved entity) will be returned to the frontend wrapped in a ResponseEntity
+
+@enduml

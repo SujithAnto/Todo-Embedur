@@ -1,0 +1,79 @@
+@startuml
+actor User
+
+User -> ToDoComponent : Open Page
+
+activate ToDoComponent
+ToDoComponent -> ApiLayer : fetchTasks(filterTable)
+activate ApiLayer
+ApiLayer -> BackendConnection : POST to 'DisplayTasktable'
+activate BackendConnection
+BackendConnection -> BackendServer : Fetch filtered tasks
+BackendServer -> BackendConnection : Return tasks
+BackendConnection -> ApiLayer : Return tasks data
+ApiLayer -> ToDoComponent : Set displayTable state
+deactivate ApiLayer
+deactivate BackendConnection
+
+User -> ToDoComponent : Click Add Task button
+ToDoComponent -> ToDoComponent : Show Add Task form
+
+User -> ToDoComponent : Fill form and submit
+ToDoComponent -> ApiLayer : addTask(newTask)
+activate ApiLayer
+ApiLayer -> BackendConnection : POST to 'AddTaskToTasktable'
+activate BackendConnection
+BackendConnection -> BackendServer : Add new task
+BackendServer -> BackendConnection : Return success
+BackendConnection -> ApiLayer : Return success message
+ApiLayer -> ToDoComponent : Close form and refresh tasks
+ToDoComponent -> ApiLayer : fetchTasks(filterTable)
+ApiLayer -> BackendConnection : POST to 'DisplayTasktable'
+BackendConnection -> BackendServer : Fetch updated tasks
+BackendServer -> BackendConnection : Return updated tasks
+BackendConnection -> ApiLayer : Return tasks data
+ApiLayer -> ToDoComponent : Set displayTable state
+deactivate ApiLayer
+deactivate BackendConnection
+
+User -> ToDoComponent : Click Edit button on task
+ToDoComponent -> ToDoComponent : Show Edit Task form
+
+User -> ToDoComponent : Update form and submit
+ToDoComponent -> ApiLayer : updateTask(editTask)
+activate ApiLayer
+ApiLayer -> BackendConnection : PUT to 'UpdateTaskInTable'
+activate BackendConnection
+BackendConnection -> BackendServer : Update task
+BackendServer -> BackendConnection : Return success
+BackendConnection -> ApiLayer : Return success message
+ApiLayer -> ToDoComponent : Close form and refresh tasks
+ToDoComponent -> ApiLayer : fetchTasks(filterTable)
+ApiLayer -> BackendConnection : POST to 'DisplayTasktable'
+BackendConnection -> BackendServer : Fetch updated tasks
+BackendServer -> BackendConnection : Return updated tasks
+BackendConnection -> ApiLayer : Return tasks data
+ApiLayer -> ToDoComponent : Set displayTable state
+deactivate ApiLayer
+deactivate BackendConnection
+
+User -> ToDoComponent : Click Delete button on task
+ToDoComponent -> ApiLayer : deleteTask(taskId)
+activate ApiLayer
+ApiLayer -> BackendConnection : DELETE to 'DeleteTaskFromTasktable'
+activate BackendConnection
+BackendConnection -> BackendServer : Delete task
+BackendServer -> BackendConnection : Return success
+BackendConnection -> ApiLayer : Return success message
+ApiLayer -> ToDoComponent : Refresh tasks
+ToDoComponent -> ApiLayer : fetchTasks(filterTable)
+ApiLayer -> BackendConnection : POST to 'DisplayTasktable'
+BackendConnection -> BackendServer : Fetch updated tasks
+BackendServer -> BackendConnection : Return updated tasks
+BackendConnection -> ApiLayer : Return tasks data
+ApiLayer -> ToDoComponent : Set displayTable state
+deactivate ApiLayer
+deactivate BackendConnection
+
+deactivate ToDoComponent
+@enduml

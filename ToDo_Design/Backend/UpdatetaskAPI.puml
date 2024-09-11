@@ -1,0 +1,37 @@
+@startuml Update_API
+
+
+participant Controller as cc
+participant Service as ss
+participant Repository as jpa
+database mysql as db
+
+activate cc
+
+cc -> cc : Use @PutMapping annotation and pass the urlPath ('/UpdateTaskInTable')
+cc -> cc : Create a public function updateTaskInTodoTable() with return type ToDotable 
+cc -> cc : Use @RequestBody annotation with datatype ToDotable updateData
+cc -> cc : Inside the function return the service function updateTaskInTable() by passing the updateData as argument
+
+activate ss
+
+ss -> ss : Create a public function updateTaskInTable() with return type ToDotable and set the parameter ToDotable updateData
+ss -> ss : Inside the function return the repo method save by passing the updateData as argument
+ss -> ss : The updateTaskInTable() function will be called from the Controller layer
+
+activate jpa
+ss -> jpa : save() will be called from the Service Layer
+
+activate db
+jpa -> db : The query will be executed and data will be updated in the database
+db -> jpa : The updated data will be returned to the Repository Layer
+deactivate db
+
+jpa -> ss : The save() output will be returned to the Service Layer
+deactivate jpa
+
+ss -> cc : The updateTaskInTable() output will be returned to the Controller Layer
+deactivate ss
+
+cc -> cc : The updateTaskInTodoTable() function's output will be returned to the frontend
+@enduml

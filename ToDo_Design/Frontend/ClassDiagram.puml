@@ -1,0 +1,31 @@
+@startuml classdiagram
+
+class ToDoComponent {
+    + handleInputChange(e)
+    + handleFormChange(e) 
+    + handleFormSubmit(e) 
+    + handleEditClick(task) 
+    + handleDeleteClick(taskId) 
+}
+
+class ToDoCalendar {
+     +tasks 
+     +renderCalendar() 
+}
+
+class ApiLayer {
+    + fetchTasks(requestBody : Object
+    + addTask(taskData : Object) 
+    + updateTask(requestBody : Object)
+    + deleteTask(id : number) 
+}
+
+class BackendConnection {
+    + BackendConnection(method,EndPoint : string, requestBody : Object, Params : Object)
+
+
+ToDoComponent --> ApiLayer : uses
+ToDoComponent --> ToDoCalendar : includes
+ApiLayer --> BackendConnection : calls
+
+@enduml
